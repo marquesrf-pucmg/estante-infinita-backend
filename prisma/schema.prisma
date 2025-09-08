@@ -1,0 +1,55 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuário
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  password  String // Em um projeto real, isso seria um hash!
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relação: Um usuário pode ter vários anúncios
+  anuncios  Anuncio[]
+}
+
+// Enum para o tipo de anúncio
+enum TipoAnuncio {
+  VENDA
+  TROCA
+  COMPRA // Caso um usuário queira anunciar que está procurando um livro
+}
+
+// Enum para a condição do livro
+enum CondicaoLivro {
+  NOVO
+  SEMINOVO
+  USADO
+}
+
+// Modelo de Anúncio de Livro
+model Anuncio {
+  id          String        @id @default(uuid())
+  titulo      String
+  autor       String
+  descricao   String? // O '?' torna o campo opcional
+  preco       Float?        // Opcional, útil apenas para VENDA
+  tipo        TipoAnuncio
+  condicao    CondicaoLivro
+  publicado   Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relação: Cada anúncio pertence a um usuário
+  ownerId     String
+  owner       User          @relation(fields: [ownerId], references: [id])
+}
