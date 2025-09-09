@@ -4,6 +4,10 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface AuthRequest extends Request {
+  userId?: string;
+}
+
 // --- GET /api/anuncios ---
 // Lista todos os anúncios
 export const getAllAnuncios = async (req: Request, res: Response) => {
@@ -52,15 +56,12 @@ export const getAnuncioById = async (req: Request, res: Response) => {
 
 // --- POST /api/anuncios ---
 // Cria um novo anúncio
-export const createAnuncio = async (req: Request, res: Response) => {
-  // TODO: No futuro, o ID virá do token de autenticação (req.user.id)
-  // Por enquanto, vamos pegar um usuário existente do banco para simular.
-  const firstUser = await prisma.user.findFirst();
-  if (!firstUser) {
-    return res.status(400).json({
-      error:
-        "Nenhum usuário encontrado para associar ao anúncio. Rode o seed primeiro.",
-    });
+export const createAnuncio = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+  
+  if (!userId) {
+    // Essa verificação é uma segurança extra, embora o middleware já garanta o userId
+    return res.status(401).json({ error: 'Usuário não autenticado.' });
   }
 
   const { titulo, autor, descricao, tipo, condicao, preco } = req.body;
@@ -74,7 +75,7 @@ export const createAnuncio = async (req: Request, res: Response) => {
         tipo,
         condicao,
         preco,
-        ownerId: firstUser.id, // Associa o anúncio ao primeiro usuário encontrado
+        ownerId: userId,
       },
     });
     res.status(201).json(novoAnuncio);
@@ -87,31 +88,39 @@ export const createAnuncio = async (req: Request, res: Response) => {
 
 // --- PUT /api/anuncios/:id ---
 // Atualiza um anúncio existente
-export const updateAnuncio = async (req: Request, res: Response) => {
+export const updateAnuncio = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
+  const userId = req.userId;
 
   if (!id) {
     return res.status(400).json({ error: "O ID do anúncio é obrigatório." });
   }
 
+  if (!userId) {
+    return res.status(401).json({ error: 'Usuário não autenticado.' });
+  }
+
   const { titulo, autor, descricao, tipo, condicao, preco, publicado } =
     req.body;
 
-  // TODO: Adicionar lógica para verificar se o usuário logado é o dono do anúncio
-
   try {
+    const anuncio = await prisma.anuncio.findUnique({
+      where: { id },
+    });
+
+    if (!anuncio) {
+      return res.status(404).json({ error: 'Anúncio não encontrado' });
+    }
+
+    if (anuncio.ownerId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
+    }
+
     const anuncioAtualizado = await prisma.anuncio.update({
       where: { id },
-      data: {
-        titulo,
-        autor,
-        descricao,
-        tipo,
-        condicao,
-        preco,
-        publicado,
-      },
+      data: { titulo, autor, descricao, tipo, condicao, preco, publicado },
     });
+
     res.status(200).json(anuncioAtualizado);
   } catch (error) {
     console.error("Erro ao atualizar anúncio:", error);
@@ -121,22 +130,35 @@ export const updateAnuncio = async (req: Request, res: Response) => {
 
 // --- DELETE /api/anuncios/:id ---
 // Deleta um anúncio
-export const deleteAnuncio = async (req: Request, res: Response) => {
+export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
+  const userId = req.userId;
 
   if (!id) {
     return res.status(400).json({ error: "O ID do anúncio é obrigatório." });
   }
 
-  // TODO: Adicionar lógica para verificar se o usuário logado é o dono do anúncio
+  if (!userId) {
+    return res.status(401).json({ error: 'Usuário não autenticado.' });
+  }
 
   try {
+    const anuncio = await prisma.anuncio.findUnique({
+      where: { id },
+    });
+
+    if (!anuncio) {
+      return res.status(404).json({ error: 'Anúncio não encontrado' });
+    }
+    
+    if (anuncio.ownerId !== userId) {
+        return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
+    }
+
     const anuncioDeletado = await prisma.anuncio.delete({
       where: { id },
     });
-    // 204 No Content é a resposta padrão para delete com sucesso
-    // Porém, estamos enviando uma mensagem junto para facilitar o feedback no frontend
-    // Assim, o código de status muda para 200 OK
+
     res.status(200).json({
       message: "Anúncio deletado com sucesso.",
       anuncio: anuncioDeletado,

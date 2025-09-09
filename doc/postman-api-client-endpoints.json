@@ -1,9 +1,129 @@
 {
   "info": {
     "name": "BookStore",
+    "description": "",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Atualizar um Anúncio",
+      "event": [],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/anuncios/80ee3f41-1f39-4fae-aeba-a2910e36dc3a",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "anuncios",
+            "80ee3f41-1f39-4fae-aeba-a2910e36dc3a"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"preco\": 30.00,\n    \"condicao\": \"NOVO\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Criar um Anúncio",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/anuncios/",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "anuncios",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"titulo\": \"O Guia do Mochileiro das Galáxias\",\n    \"autor\": \"Douglas Adams\",\n    \"descricao\": \"Uma aventura cômica de ficção científica.\",\n    \"tipo\": \"TROCA\",\n    \"condicao\": \"USADO\",\n    \"preco\": 25.50\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Excluir um Anúncio",
+      "event": [],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/anuncios/80ee3f41-1f39-4fae-aeba-a2910e36dc3a",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "anuncios",
+            "80ee3f41-1f39-4fae-aeba-a2910e36dc3a"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
     {
       "name": "Listar todos os Anúncios",
       "event": [],
@@ -40,7 +160,7 @@
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/83124b4d-0811-4396-8454-5927e17b1720",
+          "raw": "{{base_url}}/api/anuncios/859a6a74-b37b-4d17-bc7e-3310c3957534",
           "protocol": "",
           "host": [
             "{{base_url}}"
@@ -48,7 +168,7 @@
           "path": [
             "api",
             "anuncios",
-            "83124b4d-0811-4396-8454-5927e17b1720"
+            "859a6a74-b37b-4d17-bc7e-3310c3957534"
           ],
           "query": [],
           "variable": []
@@ -56,7 +176,32 @@
       }
     },
     {
-      "name": "Criar um Anúncio",
+      "name": "Health check",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Registro de usuário",
       "event": [],
       "request": {
         "method": "POST",
@@ -66,22 +211,22 @@
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/",
+          "raw": "{{base_url}}/api/auth/register",
           "protocol": "",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
-            "anuncios",
-            ""
+            "auth",
+            "register"
           ],
           "query": [],
           "variable": []
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"titulo\": \"O Guia do Mochileiro das Galáxias\",\n    \"autor\": \"Douglas Adams\",\n    \"descricao\": \"Uma aventura cômica de ficção científica.\",\n    \"tipo\": \"TROCA\",\n    \"condicao\": \"USADO\",\n    \"preco\": 25.50\n}",
+          "raw": "{ \n  \"name\": \"rafael\", \n  \"email\": \"admin@teste.com\", \n  \"password\": \"senha123\" \n}",
           "options": {
             "raw": {
               "language": "json"
@@ -91,32 +236,32 @@
       }
     },
     {
-      "name": "Atualizar um Anúncio",
+      "name": "Login",
       "event": [],
       "request": {
-        "method": "PUT",
+        "method": "POST",
         "header": [],
         "auth": {
           "type": "noauth"
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/5ec8754b-020d-4844-b610-9251e8a37870",
+          "raw": "{{base_url}}/api/auth/login",
           "protocol": "",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
-            "anuncios",
-            "5ec8754b-020d-4844-b610-9251e8a37870"
+            "auth",
+            "login"
           ],
           "query": [],
           "variable": []
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"preco\": 30.00,\n    \"condicao\": \"NOVO\"\n}",
+          "raw": "{ \n  \"email\": \"admin@teste.com\", \n  \"password\": \"senha123\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -126,37 +271,33 @@
       }
     },
     {
-      "name": "Excluir um Anúncio",
+      "name": "Usuário",
       "event": [],
       "request": {
-        "method": "DELETE",
+        "method": "GET",
         "header": [],
         "auth": {
-          "type": "noauth"
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "type": "string"
+          }
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/5ec8754b-020d-4844-b610-9251e8a37870",
+          "raw": "{{base_url}}/api/users/me",
           "protocol": "",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
-            "anuncios",
-            "5ec8754b-020d-4844-b610-9251e8a37870"
+            "users",
+            "me"
           ],
           "query": [],
           "variable": []
-        },
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
         }
       }
     }

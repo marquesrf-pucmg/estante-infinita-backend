@@ -1,12 +1,8 @@
 // src/routes/index.ts
 import { Router } from "express";
-import {
-  getAllAnuncios,
-  getAnuncioById,
-  createAnuncio,
-  updateAnuncio,
-  deleteAnuncio,
-} from "../controllers/anuncioController";
+import anuncioRoutes from './anuncio.routes';
+import authRoutes from './auth.routes';
+import userRoutes from './user.routes';
 
 const router = Router();
 
@@ -15,11 +11,8 @@ router.get("/", (req, res) => {
   res.json({ message: "API da Plataforma de Livros está no ar!" });
 });
 
-// Rotas de Anúncios
-router.get("/anuncios", getAllAnuncios); // Listar todos os anúncios
-router.get("/anuncios/:id", getAnuncioById); // Buscar um anúncio por ID
-router.post("/anuncios", createAnuncio); // Criar um novo anúncio
-router.put("/anuncios/:id", updateAnuncio); // Atualizar um anúncio
-router.delete("/anuncios/:id", deleteAnuncio); // Deletar um anúncio
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/anuncios', anuncioRoutes);
 
 export default router;
