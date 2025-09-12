@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 
 interface AuthRequest extends Request {
   userId?: string;
 }
-
-const prisma = new PrismaClient();
 
 export const getMe = async (req: AuthRequest, res: Response) => {
   const userId = req.userId;
