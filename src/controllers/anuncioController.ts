@@ -1,8 +1,7 @@
 // src/controllers/anuncioController.ts
-import express, { type Request, type Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { type Request, type Response } from "express";
+import { Prisma } from "@prisma/client";
+import prisma from "../lib/prisma";
 
 interface AuthRequest extends Request {
   userId?: string;
