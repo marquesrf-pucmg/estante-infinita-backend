@@ -4,7 +4,16 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "esnext",
-    "types": ["node"],
+    "types": [
+      "node",
+      "jest"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ]
+    },
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
@@ -18,9 +27,9 @@
     "skipLibCheck": true,
   },
   "ts-node": {
-    "esm": false, // <-- A MUDANÇA MAIS IMPORTANTE: desabilita o modo ESM
+    "esm": false,
     "compilerOptions": {
-      "module": "CommonJS" // Reforça que o módulo deve ser CommonJS
+      "module": "CommonJS"
     }
   }
 }
