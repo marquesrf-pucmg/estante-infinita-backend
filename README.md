@@ -11,3 +11,8 @@
 ```
 npm run dev
 ```
+
+### Executar testes
+```
+npm test
+```
