@@ -1,7 +1,13 @@
 // src/controllers/anuncioController.test.ts
 import { Request, Response } from 'express';
 import { Anuncio, TipoAnuncio, CondicaoLivro } from '@prisma/client';
-import * as anuncioController from './anuncioController';
+import {
+  getAllAnuncios,
+  getAnuncioById,
+  createAnuncio,
+  updateAnuncio,
+  deleteAnuncio
+} from './anuncioController';
 import { prismaMock } from '../__tests__/singleton'; // Nosso Prisma "fake" importado
 
 // Interface para que o TypeScript reconheça o 'userId' na requisição
@@ -21,8 +27,8 @@ describe('Anuncio Controller', () => {
         { id: '2', titulo: 'Livro B', autor: 'Autor B', ownerId: 'user-2', createdAt: new Date(), updatedAt: new Date(), descricao: null, preco: null, tipo: 'VENDA', condicao: 'NOVO', publicado: true },
       ];
 
-      prismaMock.anuncio.findMany.mockResolvedValue(anunciosMock);
-      await anuncioController.getAllAnuncios(mockReq, mockRes);
+  prismaMock.anuncio.findMany.mockResolvedValue(anunciosMock);
+  await getAllAnuncios(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(anunciosMock);
@@ -36,8 +42,8 @@ describe('Anuncio Controller', () => {
       const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
       const anuncioMock = { id: 'anuncio-123', titulo: 'Livro Teste' } as Anuncio;
 
-      prismaMock.anuncio.findUnique.mockResolvedValue(anuncioMock);
-      await anuncioController.getAnuncioById(mockReq, mockRes);
+  prismaMock.anuncio.findUnique.mockResolvedValue(anuncioMock);
+  await getAnuncioById(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(anuncioMock);
@@ -47,8 +53,8 @@ describe('Anuncio Controller', () => {
       const mockReq = { params: { id: 'id-inexistente' } } as unknown as Request;
       const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
-      prismaMock.anuncio.findUnique.mockResolvedValue(null);
-      await anuncioController.getAnuncioById(mockReq, mockRes);
+  prismaMock.anuncio.findUnique.mockResolvedValue(null);
+  await getAnuncioById(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({ error: 'Anúncio não encontrado' });
@@ -70,8 +76,8 @@ describe('Anuncio Controller', () => {
       const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
       const anuncioCriadoMock = { id: 'anuncio-456', ownerId: 'user-123', ...mockReq.body } as Anuncio;
 
-      prismaMock.anuncio.create.mockResolvedValue(anuncioCriadoMock);
-      await anuncioController.createAnuncio(mockReq, mockRes);
+  prismaMock.anuncio.create.mockResolvedValue(anuncioCriadoMock);
+  await createAnuncio(mockReq, mockRes);
 
       expect(prismaMock.anuncio.create).toHaveBeenCalledWith({
         data: { ...mockReq.body, ownerId: 'user-123' }
@@ -96,7 +102,7 @@ describe('Anuncio Controller', () => {
       prismaMock.anuncio.findUnique.mockResolvedValue(mockAnuncio);
       prismaMock.anuncio.update.mockResolvedValue({ ...mockAnuncio, ...mockReq.body });
 
-      await anuncioController.updateAnuncio(mockReq, mockRes);
+  await updateAnuncio(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ titulo: 'Livro Atualizado' }));
@@ -111,7 +117,7 @@ describe('Anuncio Controller', () => {
       const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
       prismaMock.anuncio.findUnique.mockResolvedValue(mockAnuncio);
-      await anuncioController.updateAnuncio(mockReq, mockRes);
+  await updateAnuncio(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(403);
       expect(prismaMock.anuncio.update).not.toHaveBeenCalled();
@@ -126,7 +132,7 @@ describe('Anuncio Controller', () => {
         const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
   
         prismaMock.anuncio.findUnique.mockResolvedValue(null);
-        await anuncioController.updateAnuncio(mockReq, mockRes);
+  await updateAnuncio(mockReq, mockRes);
   
         expect(mockRes.status).toHaveBeenCalledWith(404);
       });
@@ -143,7 +149,7 @@ describe('Anuncio Controller', () => {
         prismaMock.anuncio.findUnique.mockResolvedValue(mockAnuncio);
         prismaMock.anuncio.delete.mockResolvedValue(mockAnuncio);
 
-        await anuncioController.deleteAnuncio(mockReq, mockRes);
+  await deleteAnuncio(mockReq, mockRes);
 
         expect(prismaMock.anuncio.delete).toHaveBeenCalledWith({ where: { id: 'anuncio-123' } });
         expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -154,7 +160,7 @@ describe('Anuncio Controller', () => {
         const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
         prismaMock.anuncio.findUnique.mockResolvedValue(mockAnuncio);
-        await anuncioController.deleteAnuncio(mockReq, mockRes);
+  await deleteAnuncio(mockReq, mockRes);
 
         expect(mockRes.status).toHaveBeenCalledWith(403);
         expect(prismaMock.anuncio.delete).not.toHaveBeenCalled();
@@ -165,7 +171,7 @@ describe('Anuncio Controller', () => {
         const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
   
         prismaMock.anuncio.findUnique.mockResolvedValue(null);
-        await anuncioController.deleteAnuncio(mockReq, mockRes);
+  await deleteAnuncio(mockReq, mockRes);
   
         expect(mockRes.status).toHaveBeenCalledWith(404);
       });

@@ -1,6 +1,6 @@
 // src/controllers/authController.test.ts
 import { Request, Response } from 'express';
-import * as authController from './authController';
+import { register, login } from './authController';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prismaMock } from '../__tests__/singleton'; // <-- Importa nosso Prisma Falso
@@ -27,7 +27,8 @@ describe('Auth Controller', () => {
             (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
             prismaMock.user.create.mockResolvedValue(createdUser);
 
-            await authController.register(req, res);
+            // await authController.register(req, res); // Removido, agora usamos a função nomeada
+            await register(req, res);
 
             expect(res.status).toHaveBeenCalledWith(201);
             expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ name: 'Test User' }));
@@ -40,7 +41,8 @@ describe('Auth Controller', () => {
 
             prismaMock.user.findUnique.mockResolvedValue(existingUser);
 
-            await authController.register(req, res);
+            // await authController.register(req, res); // Removido, agora usamos a função nomeada
+            await register(req, res);
 
             expect(res.status).toHaveBeenCalledWith(409);
             expect(res.json).toHaveBeenCalledWith({ error: 'Este e-mail já está em uso.' });
@@ -66,7 +68,8 @@ describe('Auth Controller', () => {
                 (bcrypt.compare as jest.Mock).mockResolvedValue(true);
                 (mockedJwt.sign as jest.Mock).mockReturnValue('fake-jwt-token');
 
-                await authController.login(req, res);
+                // await authController.login(req, res); // Removido, agora usamos a função nomeada
+                await login(req, res);
 
                 expect(res.status).toHaveBeenCalledWith(200);
                 expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
@@ -81,7 +84,8 @@ describe('Auth Controller', () => {
                 // Simula que o usuário NÃO foi encontrado
                 prismaMock.user.findUnique.mockResolvedValue(null);
 
-                await authController.login(req, res);
+                // await authController.login(req, res); // Removido, agora usamos a função nomeada
+                await login(req, res);
 
                 expect(res.status).toHaveBeenCalledWith(401);
                 expect(res.json).toHaveBeenCalledWith({ error: 'Credenciais inválidas.' });
@@ -96,7 +100,8 @@ describe('Auth Controller', () => {
                 // Simula que a senha enviada NÃO corresponde
                 (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-                await authController.login(req, res);
+                // await authController.login(req, res); // Removido, agora usamos a função nomeada
+                await login(req, res);
 
                 expect(res.status).toHaveBeenCalledWith(401);
                 expect(res.json).toHaveBeenCalledWith({ error: 'Credenciais inválidas.' });
