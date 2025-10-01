@@ -1,0 +1,25 @@
+model Anuncio {
+  id           Int            @id @default(autoincrement())
+  titulo       String
+  autor        String
+  descricao    String?
+  isbn         String?
+  editora      String?
+  ano          Int?
+  genero       GENERO
+  preco        Decimal?       @db.Decimal(10, 2)
+  condicao     CONDICAO_LIVRO
+  tipo         TIPO_ANUNCIO
+  ativo        Boolean        @default(true)
+  criadoEm     DateTime       @default(now())
+  atualizadoEm DateTime       @updatedAt
+  usuarioId    Int
+
+  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
+  avaliacoes  Avaliacao[]
+  comentarios Comentario[]
+
+  @@index([usuarioId])
+  @@index([ativo])
+  @@index([tipo])
+}
