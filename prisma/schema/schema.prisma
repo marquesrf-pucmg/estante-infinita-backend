@@ -7,15 +7,3 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-
-enum condicao_livro {
-  NOVO
-  SEMINOVO
-  USADO
-}
-
-enum tipo_anuncio {
-  VENDA
-  TROCA
-  COMPRA
-}

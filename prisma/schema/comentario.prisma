@@ -1,0 +1,14 @@
+model Comentario {
+  id           Int      @id @default(autoincrement())
+  texto        String
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  usuarioId    Int
+  anuncioId    Int
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  anuncio Anuncio @relation(fields: [anuncioId], references: [id])
+
+  @@index([anuncioId])
+  @@index([usuarioId])
+}

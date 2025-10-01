@@ -1,0 +1,16 @@
+model Avaliacao {
+  id           Int       @id @default(autoincrement())
+  avaliacao    AVALIACAO
+  comentario   String?
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  usuarioId    Int
+  anuncioId    Int
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  anuncio Anuncio @relation(fields: [anuncioId], references: [id])
+
+  @@unique([usuarioId, anuncioId])
+  @@index([anuncioId])
+  @@index([usuarioId])
+}
