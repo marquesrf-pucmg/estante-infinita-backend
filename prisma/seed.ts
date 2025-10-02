@@ -1,5 +1,5 @@
 // prisma/seed.ts
-import { PrismaClient, TipoAnuncio, CondicaoLivro } from "@prisma/client";
+import { PrismaClient, tipo_anuncio, condicao_livro } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -8,18 +8,18 @@ async function main() {
   console.log("Iniciando o processo de seeding...");
 
   // Limpar dados existentes
-  await prisma.anuncio.deleteMany({});
-  await prisma.user.deleteMany({});
+  await (prisma as any).anuncio.deleteMany({});
+  await (prisma as any).usuario.deleteMany({});
   console.log("Banco de dados limpo.");
 
   // Criar 5 usuários
   const users = [];
   for (let i = 0; i < 5; i++) {
-    const user = await prisma.user.create({
+    const user = await (prisma as any).usuario.create({
       data: {
-        name: faker.person.fullName(),
+        nome: faker.person.fullName(),
         email: faker.internet.email(),
-        password: "password123", // Lembre-se, em produção use hash!
+        senha: "password123", // Lembre-se: em produção use hash!
       },
     });
     users.push(user);
@@ -32,23 +32,23 @@ async function main() {
     if (!randomUser) {
       throw new Error("No users available to assign as owner.");
     }
-    await prisma.anuncio.create({
+    await (prisma as any).anuncio.create({
       data: {
         titulo: faker.lorem.words(3),
         autor: faker.person.fullName(),
         descricao: faker.lorem.paragraph(),
         tipo: faker.helpers.arrayElement([
-          TipoAnuncio.VENDA,
-          TipoAnuncio.TROCA,
-          TipoAnuncio.COMPRA,
+          tipo_anuncio.VENDA,
+          tipo_anuncio.TROCA,
+          tipo_anuncio.COMPRA,
         ]),
         condicao: faker.helpers.arrayElement([
-          CondicaoLivro.NOVO,
-          CondicaoLivro.SEMINOVO,
-          CondicaoLivro.USADO,
+          condicao_livro.NOVO,
+          condicao_livro.SEMINOVO,
+          condicao_livro.USADO,
         ]),
-        preco: parseFloat(faker.commerce.price({ min: 10, max: 100 })),
-        ownerId: randomUser.id,
+  preco: faker.number.float({ min: 10, max: 100, fractionDigits: 2 }),
+        usuarioId: randomUser.id,
       },
     });
   }

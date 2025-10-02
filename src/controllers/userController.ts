@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@src/lib/prisma';
 
 interface AuthRequest extends Request {
   userId?: string;
 }
-
-const prisma = new PrismaClient();
 
 export const getMe = async (req: AuthRequest, res: Response) => {
   const userId = req.userId;
@@ -15,15 +13,26 @@ export const getMe = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const idNum = Number(userId);
+    if (Number.isNaN(idNum)) {
+      return res.status(400).json({ error: 'ID do usuário inválido.' });
+    }
+
+    const user = await (prisma as any).user.findUnique({ where: { id: idNum } });
 
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado." });
     }
 
-    const { password, ...userWithoutPassword } = user;
+    // O schema pode usar `nome` e `senha`. Normalizamos para `name` e removemos a senha
+    const userWithoutPassword = {
+      id: user.id,
+      name: user.nome ?? user.name,
+      email: user.email,
+      criadoEm: user.criadoEm ?? user.createdAt,
+      atualizadoEm: user.atualizadoEm ?? user.updatedAt,
+    };
+
     res.status(200).json(userWithoutPassword);
   } catch (error) {
     res.status(500).json({ error: "Não foi possível buscar o usuário." });

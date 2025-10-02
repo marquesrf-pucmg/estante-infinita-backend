@@ -14,10 +14,9 @@ model Anuncio {
   criadoEm     DateTime       @default(now())
   atualizadoEm DateTime       @updatedAt
   usuarioId    Int
-
-  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
-  avaliacoes  Avaliacao[]
-  comentarios Comentario[]
+  usuario      Usuario        @relation(fields: [usuarioId], references: [id])
+  avaliacoes   Avaliacao[]
+  comentarios  Comentario[]
 
   @@index([usuarioId])
   @@index([ativo])

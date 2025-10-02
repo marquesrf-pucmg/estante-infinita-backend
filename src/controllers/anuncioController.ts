@@ -11,10 +11,10 @@ interface AuthRequest extends Request {
 // Lista todos os anúncios
 export const getAllAnuncios = async (req: Request, res: Response) => {
   try {
-    const anuncios = await prisma.anuncio.findMany({
+  const anuncios = await (prisma as any).anuncio.findMany({
       include: {
-        owner: {
-          select: { name: true, email: true },
+        usuario: {
+          select: { nome: true, email: true },
         },
       },
     });
@@ -34,11 +34,16 @@ export const getAnuncioById = async (req: Request, res: Response) => {
   }
 
   try {
-    const anuncio = await prisma.anuncio.findUnique({
-      where: { id },
+    const idNum = Number(id);
+    if (Number.isNaN(idNum)) {
+      return res.status(400).json({ error: 'ID do anúncio inválido.' });
+    }
+
+  const anuncio = await (prisma as any).anuncio.findUnique({
+      where: { id: idNum },
       include: {
-        owner: {
-          select: { name: true, email: true },
+        usuario: {
+          select: { nome: true, email: true },
         },
       },
     });
@@ -66,7 +71,12 @@ export const createAnuncio = async (req: AuthRequest, res: Response) => {
   const { titulo, autor, descricao, tipo, condicao, preco } = req.body;
 
   try {
-    const novoAnuncio = await prisma.anuncio.create({
+    const usuarioId = Number(userId);
+    if (Number.isNaN(usuarioId)) {
+      return res.status(400).json({ error: 'ID do usuário inválido.' });
+    }
+
+  const novoAnuncio = await (prisma as any).anuncio.create({
       data: {
         titulo,
         autor,
@@ -74,7 +84,7 @@ export const createAnuncio = async (req: AuthRequest, res: Response) => {
         tipo,
         condicao,
         preco,
-        ownerId: userId,
+        usuarioId,
       },
     });
     res.status(201).json(novoAnuncio);
@@ -99,25 +109,54 @@ export const updateAnuncio = async (req: AuthRequest, res: Response) => {
     return res.status(401).json({ error: 'Usuário não autenticado.' });
   }
 
-  const { titulo, autor, descricao, tipo, condicao, preco, publicado } =
-    req.body;
+  const {
+    titulo,
+    autor,
+    descricao,
+    isbn,
+    editora,
+    ano,
+    genero,
+    tipo,
+    condicao,
+    preco,
+    ativo,
+  } = req.body;
 
   try {
-    const anuncio = await prisma.anuncio.findUnique({
-      where: { id },
-    });
+    const idNum = Number(id);
+    if (Number.isNaN(idNum)) {
+      return res.status(400).json({ error: 'ID do anúncio inválido.' });
+    }
+
+  const anuncio = await (prisma as any).anuncio.findUnique({ where: { id: idNum } });
 
     if (!anuncio) {
       return res.status(404).json({ error: 'Anúncio não encontrado' });
     }
 
-    if (anuncio.ownerId !== userId) {
+    const usuarioId = Number(userId);
+    if (anuncio.usuarioId !== usuarioId) {
       return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
     }
 
-    const anuncioAtualizado = await prisma.anuncio.update({
-      where: { id },
-      data: { titulo, autor, descricao, tipo, condicao, preco, publicado },
+    // Construção dinâmica do objeto de update para evitar atualizar campos nulos/indesejados
+    const data: any = {};
+    if (titulo !== undefined) data.titulo = titulo;
+    if (autor !== undefined) data.autor = autor;
+    if (descricao !== undefined) data.descricao = descricao;
+    if (isbn !== undefined) data.isbn = isbn;
+    if (editora !== undefined) data.editora = editora;
+    if (ano !== undefined) data.ano = ano;
+    if (genero !== undefined) data.genero = genero;
+    if (tipo !== undefined) data.tipo = tipo;
+    if (condicao !== undefined) data.condicao = condicao;
+    if (preco !== undefined) data.preco = preco;
+    if (ativo !== undefined) data.ativo = ativo;
+
+  const anuncioAtualizado = await (prisma as any).anuncio.update({
+      where: { id: idNum },
+      data,
     });
 
     res.status(200).json(anuncioAtualizado);
@@ -142,26 +181,24 @@ export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const anuncio = await prisma.anuncio.findUnique({
-      where: { id },
-    });
+    const idNum = Number(id);
+    if (Number.isNaN(idNum)) {
+      return res.status(400).json({ error: 'ID do anúncio inválido.' });
+    }
+
+  const anuncio = await (prisma as any).anuncio.findUnique({ where: { id: idNum } });
 
     if (!anuncio) {
       return res.status(404).json({ error: 'Anúncio não encontrado' });
     }
-    
-    if (anuncio.ownerId !== userId) {
-        return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
+    const usuarioId = Number(userId);
+    if (anuncio.usuarioId !== usuarioId) {
+      return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
     }
 
-    const anuncioDeletado = await prisma.anuncio.delete({
-      where: { id },
-    });
+  const anuncioDeletado = await (prisma as any).anuncio.delete({ where: { id: idNum } });
 
-    res.status(200).json({
-      message: "Anúncio deletado com sucesso.",
-      anuncio: anuncioDeletado,
-    });
+    res.status(200).json({ message: "Anúncio deletado com sucesso.", anuncio: anuncioDeletado });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
