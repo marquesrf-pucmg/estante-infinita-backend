@@ -15,13 +15,13 @@
           "type": "bearer",
           "bearer": {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
             "type": "string"
           }
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/80ee3f41-1f39-4fae-aeba-a2910e36dc3a",
+          "raw": "{{base_url}}/api/anuncios/6",
           "protocol": "",
           "host": [
             "{{base_url}}"
@@ -29,14 +29,14 @@
           "path": [
             "api",
             "anuncios",
-            "80ee3f41-1f39-4fae-aeba-a2910e36dc3a"
+            "6"
           ],
           "query": [],
           "variable": []
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"preco\": 30.00,\n    \"condicao\": \"NOVO\"\n}",
+          "raw": "{\n    \"preco\": 70.00,\n    \"condicao\": \"NOVO\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -55,7 +55,7 @@
           "type": "bearer",
           "bearer": {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
             "type": "string"
           }
         },
@@ -76,7 +76,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"titulo\": \"O Guia do Mochileiro das Galáxias\",\n    \"autor\": \"Douglas Adams\",\n    \"descricao\": \"Uma aventura cômica de ficção científica.\",\n    \"tipo\": \"TROCA\",\n    \"condicao\": \"USADO\",\n    \"preco\": 25.50\n}",
+          "raw": "{\n  \"titulo\": \"O Guia do Mochileiro das Galáxias\",\n  \"autor\": \"Douglas Adams\",\n  \"genero\": \"FICCAO_CIENTIFICA\",\n  \"condicao\": \"SEMINOVO\",\n  \"tipo\": \"VENDA\",\n  \"descricao\": \"Livro em ótimo estado, com poucas marcas de uso.\",\n  \"isbn\": \"9788575422468\",\n  \"editora\": \"Arqueiro\",\n  \"ano\": 2006,\n  \"preco\": 35.50\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -95,13 +95,13 @@
           "type": "bearer",
           "bearer": {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU5NTk5MjA3LCJleHAiOjE3NTk2MjgwMDd9.qdWj7wfvsSsckr3HoKULZnSKgiHmP9wfgLFoP2yfHPA",
             "type": "string"
           }
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/80ee3f41-1f39-4fae-aeba-a2910e36dc3a",
+          "raw": "{{base_url}}/api/anuncios/1",
           "protocol": "",
           "host": [
             "{{base_url}}"
@@ -109,7 +109,7 @@
           "path": [
             "api",
             "anuncios",
-            "80ee3f41-1f39-4fae-aeba-a2910e36dc3a"
+            "1"
           ],
           "query": [],
           "variable": []
@@ -121,6 +121,31 @@
               "language": "json"
             }
           }
+        }
+      }
+    },
+    {
+      "name": "Health check",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            ""
+          ],
+          "query": [],
+          "variable": []
         }
       }
     },
@@ -160,7 +185,7 @@
         },
         "description": "",
         "url": {
-          "raw": "{{base_url}}/api/anuncios/859a6a74-b37b-4d17-bc7e-3310c3957534",
+          "raw": "{{base_url}}/api/anuncios/4",
           "protocol": "",
           "host": [
             "{{base_url}}"
@@ -168,70 +193,10 @@
           "path": [
             "api",
             "anuncios",
-            "859a6a74-b37b-4d17-bc7e-3310c3957534"
+            "4"
           ],
           "query": [],
           "variable": []
-        }
-      }
-    },
-    {
-      "name": "Health check",
-      "event": [],
-      "request": {
-        "method": "GET",
-        "header": [],
-        "auth": {
-          "type": "noauth"
-        },
-        "description": "",
-        "url": {
-          "raw": "{{base_url}}/api/",
-          "protocol": "",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            ""
-          ],
-          "query": [],
-          "variable": []
-        }
-      }
-    },
-    {
-      "name": "Registro de usuário",
-      "event": [],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "auth": {
-          "type": "noauth"
-        },
-        "description": "",
-        "url": {
-          "raw": "{{base_url}}/api/auth/register",
-          "protocol": "",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "auth",
-            "register"
-          ],
-          "query": [],
-          "variable": []
-        },
-        "body": {
-          "mode": "raw",
-          "raw": "{ \n  \"name\": \"rafael\", \n  \"email\": \"admin@teste.com\", \n  \"password\": \"senha123\" \n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
         }
       }
     },
@@ -261,7 +226,42 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{ \n  \"email\": \"admin@teste.com\", \n  \"password\": \"senha123\"\n}",
+          "raw": "{ \n  \"email\": \"admin@teste.com\", \n  \"senha\": \"senha123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Registro de usuário",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/auth/register",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{ \n  \"nome\": \"rafael\", \n  \"email\": \"admin@teste.com\", \n  \"senha\": \"senha123\" \n}",
           "options": {
             "raw": {
               "language": "json"
@@ -280,7 +280,7 @@
           "type": "bearer",
           "bearer": {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1NzQ1MTAyMywiZXhwIjoxNzU3NDc5ODIzfQ.yy64nIPdHc284FJ7xg-JDYOcPe4vdU6aGMRUrKv2RC8",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI3ODg0YmUwLTA1NzItNGZmOC04ZDU5LTYzNGIzZWU4YmEzNSIsImlhdCI6MTc1ODIyOTg3MiwiZXhwIjoxNzU4MjU4NjcyfQ.E4C4oiug0AvV_dhIgP0CDOubQ2O3G_90aY3C-QcrExU",
             "type": "string"
           }
         },
@@ -295,6 +295,220 @@
             "api",
             "users",
             "me"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Criar uma Avaliação",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/avaliacoes/",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "avaliacoes",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"avaliacao\": \"EXCELENTE\",\n  \"anuncioId\": 6\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Atualizar uma Avaliação",
+      "event": [],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/avaliacoes/5",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "avaliacoes",
+            "5"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comentario\": \"O livro tem um humor inteligente e cativante.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Criar um comentário",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/comentarios/",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "comentarios",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texto\": \"Quero saber mais informações sobre o estado do livro\",\n  \"anuncioId\": 4\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Atualizar um Comentário",
+      "event": [],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzU5NjI4NDY1LCJleHAiOjE3NTk2NTcyNjV9.l1IFEwIprGd_cli0U13mwO145kMG5zoe3NbRhRtntU0",
+            "type": "string"
+          }
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/comentarios/1",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "comentarios",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"texto\": \"Quero saber mais informações sobre o estado do livro e se há espaço para negociação\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Listar Comentários por Anúncio",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/comentarios/anuncio/1",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "comentarios",
+            "anuncio",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Listar Avaliações por Anúncio",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{base_url}}/api/avaliacoes/anuncio/4",
+          "protocol": "",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "avaliacoes",
+            "anuncio",
+            "4"
           ],
           "query": [],
           "variable": []

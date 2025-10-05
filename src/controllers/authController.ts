@@ -4,34 +4,36 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export const register = async (req: Request, res: Response) => {
-  // Aceitamos o payload no formato esperado pelos testes ({ name, email, password })
-  const { name, email, password } = req.body;
+  // 1. A desestruturação agora espera 'nome' e 'senha' diretamente do body
+  const { nome, email, senha } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  // 2. A validação é atualizada para as novas variáveis
+  if (!nome || !email || !senha) {
+    return res.status(400).json({ error: 'Os campos nome, email e senha são obrigatórios.' });
   }
 
   try {
-    const existingUser = await (prisma as any).user.findUnique({ where: { email } });
+    const existingUser = await prisma.usuario.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(409).json({ error: 'Este e-mail já está em uso.' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 3. O hash é feito diretamente na variável 'senha'
+    const hashedPassword = await bcrypt.hash(senha, 10);
 
-    // Mapeamos `name` -> `nome` e `password` -> `senha` para compatibilidade com o schema Prisma
-    const newUser = await (prisma as any).user.create({
+    const newUser = await prisma.usuario.create({
       data: {
-        nome: name,
+        // 4. Como os nomes são iguais, podemos usar a forma abreviada
+        nome,
         email,
-        senha: hashedPassword,
+        senha: hashedPassword, // A senha salva no banco é a versão com hash
       },
     });
 
-    // Normalizamos o objeto de resposta para manter shape esperada nos testes (name/email/id)
+    // 5. O objeto de resposta também usará 'nome' para manter a consistência
     const userWithoutPassword = {
       id: newUser.id,
-      name: newUser.nome ?? name,
+      nome: newUser.nome,
       email: newUser.email,
       criadoEm: newUser.criadoEm,
       atualizadoEm: newUser.atualizadoEm,
@@ -45,33 +47,34 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  // 1. Espera 'senha' em vez de 'password'
+  const { email, senha } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'E-mail and senha são obrigatórios.' });
+  if (!email || !senha) {
+    // Mensagem de erro consistente
+    return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
   }
 
   try {
-    // usamos (prisma as any).user para evitar erro de tipagem até gerar o client localmente
-    const user = await (prisma as any).user.findUnique({ where: { email } });
+    // 2. Busca no model 'usuario' e sem o '(as any)'
+    const user = await prisma.usuario.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
 
-    // O campo no schema é `senha` — o mock/test pode retornar `password` dependendo do teste.
-    const hash = user.senha ?? user.password;
-
-    const isPasswordValid = await bcrypt.compare(password, hash);
+    // 3. Compara a 'senha' recebida com a 'user.senha' do banco
+    const isPasswordValid = await bcrypt.compare(senha, user.senha);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
 
     if (!process.env.JWT_SECRET) {
+      // É uma boa prática manter essa verificação
       throw new Error("A chave secreta do JWT não foi definida no .env");
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '8h',
+      expiresIn: '8h', // 8 horas de validade para o token
     });
 
     res.status(200).json({ token });

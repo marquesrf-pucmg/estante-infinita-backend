@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
-  "build": "tsc",
-  "prestart": "npm run build",
-  "start": "node dist/server.js",
-  "start:dev": "npm run dev",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "test": "jest"
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/server.js",
+    "start:dev": "npm run dev",
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
