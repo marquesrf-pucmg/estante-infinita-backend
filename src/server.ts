@@ -1,10 +1,14 @@
 // src/server.ts
 import express from "express";
 import routes from "./routes/index";
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+app.use(cors({
+  origin: "*", // origem do seu frontend Angular
+}));
 app.use(express.json()); // Habilita o uso de JSON no corpo das requisições
 app.use("/api", routes); // Prefixo para todas as rotas da API
 

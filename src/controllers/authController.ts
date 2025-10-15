@@ -30,6 +30,15 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
+    if (!process.env.JWT_SECRET) {
+      // É uma boa prática manter essa verificação
+      throw new Error("A chave secreta do JWT não foi definida no .env");
+    }
+
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+      expiresIn: '8h', // 8 horas de validade para o token
+    });
+
     // 5. O objeto de resposta também usará 'nome' para manter a consistência
     const userWithoutPassword = {
       id: newUser.id,
@@ -39,7 +48,7 @@ export const register = async (req: Request, res: Response) => {
       atualizadoEm: newUser.atualizadoEm,
     };
 
-    res.status(201).json(userWithoutPassword);
+    res.status(201).json({userWithoutPassword, token});
   } catch (error) {
     console.error('Erro no register:', error);
     res.status(500).json({ error: 'Não foi possível registrar o usuário.' });
@@ -73,11 +82,17 @@ export const login = async (req: Request, res: Response) => {
       throw new Error("A chave secreta do JWT não foi definida no .env");
     }
 
+    const userWithoutPassword = {
+      id: user.id,
+      nome: user.nome,
+      email: user.email,
+    };
+
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: '8h', // 8 horas de validade para o token
     });
 
-    res.status(200).json({ token });
+    res.status(200).json({userWithoutPassword, token });
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).json({ error: 'Não foi possível fazer o login.' });
