@@ -4,9 +4,9 @@ import { createComentario, updateComentario, deleteComentario, listByAnuncio } f
 
 const router = Router();
 
-router.post('/', authMiddleware, createComentario);
+router.post('/createComentario', authMiddleware, createComentario);
 router.put('/:id', authMiddleware, updateComentario);
 router.delete('/:id', authMiddleware, deleteComentario);
-router.get('/anuncio/:anuncioId', listByAnuncio);
+router.get('/listByAnuncio/:anuncioId', listByAnuncio);
 
 export default router;

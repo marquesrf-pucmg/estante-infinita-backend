@@ -14,7 +14,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
 
   try {
     const idNum = Number(userId);
-    if (Number.isNaN(idNum)) {
+    if (Number.isNaN(userId)) {
       return res.status(400).json({ error: 'ID do usuário inválido.' });
     }
 
@@ -27,7 +27,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
     // O schema pode usar `nome` e `senha`. Normalizamos para `name` e removemos a senha
     const userWithoutPassword = {
       id: user.id,
-      name: user.nome ?? user.name,
+      nome: user.nome,
       email: user.email,
       criadoEm: user.criadoEm ?? user.createdAt,
       atualizadoEm: user.atualizadoEm ?? user.updatedAt,

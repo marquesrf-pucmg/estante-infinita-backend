@@ -20,7 +20,7 @@ export const createComentario = async (req: AuthRequest, res: Response) => {
   if (Number.isNaN(anuncioIdNum)) return res.status(400).json({ error: 'ID do anúncio inválido.' });
 
   try {
-    const novo = await (prisma as any).comentario.create({
+    const novo = await prisma.comentario.create({
       data: {
         texto,
         usuarioId,
@@ -33,6 +33,7 @@ export const createComentario = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: 'Não foi possível criar o comentário.' });
   }
 };
+
 
 export const updateComentario = async (req: AuthRequest, res: Response) => {
   const usuarioIdStr = req.userId;
@@ -87,7 +88,20 @@ export const listByAnuncio = async (req: Request, res: Response) => {
   if (Number.isNaN(anuncioIdNum)) return res.status(400).json({ error: 'ID do anúncio inválido.' });
 
   try {
-    const lista = await (prisma as any).comentario.findMany({ where: { anuncioId: anuncioIdNum } });
+    const lista = await prisma.comentario.findMany({
+      where: { anuncioId: anuncioIdNum },
+      include: {
+        usuario: {
+          select: {
+            nome: true, 
+          },
+        },
+      },
+      orderBy: {
+        criadoEm: 'desc', 
+      },
+    });
+
     res.status(200).json(lista);
   } catch (err) {
     console.error('Erro ao listar comentários:', err);
