@@ -1,35 +1,35 @@
-import { Request, Response } from 'express';
-import prisma from '@src/lib/prisma';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { Request, Response } from "express";
+import prisma from "@src/lib/prisma";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    return res.status(400).json({ error: "Todos os campos são obrigatórios." });
   }
 
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.usuario.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ error: 'Este e-mail já está em uso.' });
+      return res.status(409).json({ error: "Este e-mail já está em uso." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
+    const newUser = await prisma.usuario.create({
       data: {
-        name,
+        nome: name,
         email,
-        password: hashedPassword,
+        senha: hashedPassword,
       },
     });
 
-    const { password: _, ...userWithoutPassword } = newUser;
+    const { senha: _, ...userWithoutPassword } = newUser;
     res.status(201).json(userWithoutPassword);
   } catch (error) {
-    res.status(500).json({ error: 'Não foi possível registrar o usuário.' });
+    res.status(500).json({ error: "Não foi possível registrar o usuário." });
   }
 };
 
@@ -37,30 +37,32 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'E-mail and senha são obrigatórios.' });
+    return res
+      .status(400)
+      .json({ error: "E-mail and senha são obrigatórios." });
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.usuario.findUnique({ where: { email } });
     if (!user) {
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
+      return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.senha);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
+      return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
     if (!process.env.JWT_SECRET) {
-        throw new Error("A chave secreta do JWT não foi definida no .env");
+      throw new Error("A chave secreta do JWT não foi definida no .env");
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '8h',
+      expiresIn: "8h",
     });
 
     res.status(200).json({ token });
   } catch (error) {
-    res.status(500).json({ error: 'Não foi possível fazer o login.' });
+    res.status(500).json({ error: "Não foi possível fazer o login." });
   }
 };
