@@ -207,3 +207,30 @@ export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: "Não foi possível deletar o anúncio." });
   }
 };
+
+// --- GET /api/anuncios/user/:userId ---
+// Lista todos os anúncios de um usuário específico
+export const getAnunciosByUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const idNum = Number(userId);
+    if (isNaN(idNum)) {
+      return res.status(400).json({ error: 'ID do usuário inválido.' });
+    }
+
+    const anuncios = await prisma.anuncio.findMany({
+      where: { usuarioId: idNum },
+      include: {
+        usuario: {
+          select: { nome: true, email: true },
+        },
+      },
+    });
+
+    res.status(200).json(anuncios);
+  } catch (error) {
+    console.error("Erro ao buscar anúncios por usuário:", error);
+    res.status(500).json({ error: "Não foi possível buscar os anúncios deste usuário" });
+  }
+};

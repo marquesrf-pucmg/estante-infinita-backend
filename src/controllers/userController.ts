@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import prisma from '@src/lib/prisma';
+import { Request, Response } from "express";
+import prisma from "@src/lib/prisma";
 
 interface AuthRequest extends Request {
   userId?: string;
@@ -14,11 +14,13 @@ export const getMe = async (req: AuthRequest, res: Response) => {
 
   try {
     const idNum = Number(userId);
-    if (Number.isNaN(userId)) {
-      return res.status(400).json({ error: 'ID do usuário inválido.' });
+    if (Number.isNaN(idNum)) {
+      return res.status(400).json({ error: "ID do usuário inválido." });
     }
 
-    const user = await (prisma as any).user.findUnique({ where: { id: idNum } });
+    const user = await prisma.usuario.findUnique({
+      where: { id: idNum },
+    });
 
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado." });
@@ -29,8 +31,8 @@ export const getMe = async (req: AuthRequest, res: Response) => {
       id: user.id,
       nome: user.nome,
       email: user.email,
-      criadoEm: user.criadoEm ?? user.createdAt,
-      atualizadoEm: user.atualizadoEm ?? user.updatedAt,
+      criadoEm: user.criadoEm,
+      atualizadoEm: user.atualizadoEm, 
     };
 
     res.status(200).json(userWithoutPassword);
