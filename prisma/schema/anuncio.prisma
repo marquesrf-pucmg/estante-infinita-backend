@@ -10,6 +10,7 @@ model Anuncio {
   preco        Decimal?       @db.Decimal(10, 2)
   condicao     CONDICAO_LIVRO
   tipo         TIPO_ANUNCIO
+  imagem       String?
   ativo        Boolean        @default(true)
   criadoEm     DateTime       @default(now())
   atualizadoEm DateTime       @updatedAt

@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { getMe } from '../controllers/userController';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { Router } from "express";
+import { getMe } from "../controllers/userController";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
-const router = Router();
+const router: Router = Router();
 
-router.get('/me', authMiddleware, getMe);
+router.get("/me", authMiddleware, getMe);
 
 export default router;
