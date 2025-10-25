@@ -3,6 +3,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import {
   getAllAnuncios,
   getAnuncioById,
+  getAnunciosByUser,
   createAnuncio,
   updateAnuncio,
   deleteAnuncio,
@@ -20,6 +21,7 @@ const upload = multer({
 // Qualquer um pode ver a lista de anúncios e os detalhes de um anúncio
 router.get("/getAllAnuncios", getAllAnuncios);
 router.get("/getAnuncioById/:id", getAnuncioById);
+router.get("/getAnunciosByUser/:userId", getAnunciosByUser);
 
 // --- ROTAS PRIVADAS ---
 // Apenas usuários logados podem criar, atualizar ou deletar anúncios.
