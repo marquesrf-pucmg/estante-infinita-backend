@@ -1,14 +1,30 @@
-// src/controllers/anuncioController.ts
 import { type Request, type Response } from "express";
 import { Prisma } from "@prisma/client";
-import prisma from '@src/lib/prisma'; // Verifique o caminho da importação
+import prisma from "@src/lib/prisma";
+import { uploadImageToSupabase } from "@src/services/supabase/image-upload";
+import { parseNumericId } from "@src/helpers/number";
 
-// Interface para estender o Request do Express e adicionar o userId
 interface AuthRequest extends Request {
   userId?: string;
 }
 
-// --- GET /api/anuncios ---
+const verifyAnuncioOwnership = async (anuncioId: number, usuarioId: number) => {
+  const anuncio = await prisma.anuncio.findUnique({
+    where: { id: anuncioId },
+    select: { usuarioId: true },
+  });
+
+  if (!anuncio) {
+    throw new Error("Anúncio não encontrado");
+  }
+
+  if (anuncio.usuarioId !== usuarioId) {
+    throw new Error("Acesso negado");
+  }
+
+  return anuncio;
+};
+
 // Lista todos os anúncios
 export const getAllAnuncios = async (req: Request, res: Response) => {
   try {
@@ -30,16 +46,12 @@ export const getAllAnuncios = async (req: Request, res: Response) => {
   }
 };
 
-// --- GET /api/anuncios/:id ---
 // Busca um anúncio específico pelo seu ID
 export const getAnuncioById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const idNum = Number(id);
-    if (isNaN(idNum)) {
-      return res.status(400).json({ error: 'ID do anúncio inválido.' });
-    }
+    const idNum = parseNumericId(id);
 
     const anuncio = await prisma.anuncio.findUnique({
       where: { id: idNum },
@@ -61,29 +73,28 @@ export const getAnuncioById = async (req: Request, res: Response) => {
   }
 };
 
-// --- POST /api/anuncios ---
 // Cria um novo anúncio
 export const createAnuncio = async (req: AuthRequest, res: Response) => {
   const userId = req.userId;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Usuário não autenticado.' });
+    return res.status(401).json({ error: "Usuário não autenticado." });
   }
 
   // Desestruturando todos os campos do model Anuncio do body
-  const {
-    titulo, autor, descricao, isbn, editora, ano, genero, preco, condicao, tipo
-  } = req.body;
+  const { titulo, autor, descricao, isbn, editora, ano, genero, preco, condicao, tipo } = req.body;
+
 
   // Validação dos campos obrigatórios
   if (!titulo || !autor || !genero || !condicao || !tipo) {
     return res.status(400).json({
-      error: "Campos obrigatórios não preenchidos: titulo, autor, genero, condicao, tipo."
+      error: "Campos obrigatórios não preenchidos: titulo, autor, genero, condicao, tipo.",
     });
   }
 
   try {
-    const usuarioId = Number(userId);
+    const usuarioId = parseNumericId(userId);
+
 
     const novoAnuncio = await prisma.anuncio.create({
       data: {
@@ -92,22 +103,23 @@ export const createAnuncio = async (req: AuthRequest, res: Response) => {
         descricao,
         isbn,
         editora,
-        ano: ano ? Number(ano) : null, // Converte para número ou define como nulo
+        ano: ano ? parseNumericId(ano) : null,
         genero,
-        preco: preco ? new Prisma.Decimal(preco) : null, // Converte para Decimal
+        preco: preco ? new Prisma.Decimal(preco) : null,
         condicao,
         tipo,
         usuarioId, // Associa ao usuário logado
         ativo: true, // Define o anúncio como ativo por padrão
       },
     });
+
     res.status(201).json(novoAnuncio);
   } catch (error) {
     // Tratamento de erro específico para valores de enum inválidos
     if (error instanceof Prisma.PrismaClientValidationError) {
       return res.status(400).json({
         error: "Erro de validação. Verifique se os valores para genero, condicao e tipo são válidos.",
-        details: error.message
+        details: error.message,
       });
     }
     console.error("Erro ao criar anúncio:", error);
@@ -115,42 +127,28 @@ export const createAnuncio = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
-// --- PUT /api/anuncios/:id ---
 // Atualiza um anúncio existente
 export const updateAnuncio = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const userId = req.userId;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Usuário não autenticado.' });
+    return res.status(401).json({ error: "Usuário não autenticado." });
   }
 
   try {
-    const idNum = Number(id);
-    const usuarioIdNum = Number(userId);
-
-    if (isNaN(idNum) || isNaN(usuarioIdNum)) {
-      return res.status(400).json({ error: 'ID inválido.' });
-    }
+    const idNum = parseNumericId(id);
+    const usuarioIdNum = parseNumericId(userId);
 
     // Verifica se o anúncio existe e se pertence ao usuário
-    const anuncio = await prisma.anuncio.findUnique({ where: { id: idNum } });
-    if (!anuncio) {
-      return res.status(404).json({ error: 'Anúncio não encontrado' });
-    }
-    if (anuncio.usuarioId !== usuarioIdNum) {
-      return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
-    }
+    await verifyAnuncioOwnership(idNum, usuarioIdNum);
 
-    const {
-      titulo, autor, descricao, isbn, editora, ano, genero, preco, condicao, tipo, ativo
-    } = req.body;
+    const { ano, preco } = req.body;
 
     // Converte os tipos de dados antes de enviar para o banco
     const data: Prisma.AnuncioUpdateInput = {
       ...req.body,
-      ano: ano !== undefined ? (ano === null ? null : Number(ano)) : undefined,
+      ano: ano !== undefined ? (ano === null ? null : parseNumericId(ano)) : undefined,
       preco: preco !== undefined ? (preco === null ? null : new Prisma.Decimal(preco)) : undefined,
     };
 
@@ -171,8 +169,6 @@ export const updateAnuncio = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
-// --- DELETE /api/anuncios/:id ---
 // Deleta um anúncio
 export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
@@ -183,21 +179,11 @@ export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const idNum = Number(id);
-    const usuarioIdNum = Number(userId);
+    const idNum = parseNumericId(id);
+    const usuarioIdNum = parseNumericId(userId);
 
-    if (isNaN(idNum) || isNaN(usuarioIdNum)) {
-      return res.status(400).json({ error: "ID inválido." });
-    }
-
-    // Verifica se o anúncio existe e pertence ao usuário
-    const anuncio = await prisma.anuncio.findUnique({ where: { id: idNum } });
-    if (!anuncio) {
-      return res.status(404).json({ error: "Anúncio não encontrado." });
-    }
-    if (anuncio.usuarioId !== usuarioIdNum) {
-      return res.status(403).json({ error: "Acesso negado. Você não é o dono deste anúncio." });
-    }
+    // Verifica se o anúncio existe e se pertence ao usuário
+    await verifyAnuncioOwnership(idNum, usuarioIdNum);
 
     // 🔹 Deleta manualmente todos os registros dependentes
     await prisma.$transaction([

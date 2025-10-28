@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { deleteMe, editMe, getMe } from '../controllers/userController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/me', authMiddleware, getMe);
 router.delete('/deleteMe', authMiddleware, deleteMe);

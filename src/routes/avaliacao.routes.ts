@@ -1,13 +1,8 @@
-import { Router } from 'express';
-import { authMiddleware } from '../middlewares/authMiddleware';
-import {
-  createAvaliacao,
-  updateAvaliacao,
-  deleteAvaliacao,
-  listByAnuncio,
-} from '../controllers/avaliacaoController';
+import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import { createAvaliacao, updateAvaliacao, deleteAvaliacao, listByAnuncio } from "../controllers/avaliacaoController";
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/createAvaliacao', authMiddleware, createAvaliacao);
 router.put('/:id', authMiddleware, updateAvaliacao);

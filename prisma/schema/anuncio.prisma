@@ -14,6 +14,7 @@ model Anuncio {
   criadoEm     DateTime       @default(now())
   atualizadoEm DateTime       @updatedAt
   usuarioId    Int
+  imagem       String?
   usuario      Usuario        @relation(fields: [usuarioId], references: [id])
   avaliacoes   Avaliacao[]
   comentarios  Comentario[]
