@@ -6,7 +6,6 @@ interface AuthRequest extends Request {
   userId?: string;
 }
 
-// Cria uma avaliação ligada a um usuário e um anúncio
 export const createAvaliacao = async (req: AuthRequest, res: Response) => {
   const usuarioIdStr = req.userId;
   if (!usuarioIdStr) return res.status(401).json({ error: 'Usuário não autenticado.' });
@@ -17,31 +16,66 @@ export const createAvaliacao = async (req: AuthRequest, res: Response) => {
   const { avaliacao, comentario, anuncioId } = req.body;
   if (!avaliacao || !anuncioId) return res.status(400).json({ error: 'Campos obrigatórios: avaliacao, anuncioId' });
 
-  const anuncioIdNum = Number(anuncioId);
-  if (Number.isNaN(anuncioIdNum)) return res.status(400).json({ error: 'ID do anúncio inválido.' });
+  const avaliacaoEnumMap: Record<number, string> = {
+    5: 'EXCELENTE',
+    4: 'MUITO_BOM',
+    3: 'BOM',
+    2: 'REGULAR',
+    1: 'RUIM',
+  };
+
+  const avaliacaoEnum = avaliacaoEnumMap[avaliacao];
+  if (!avaliacaoEnum) return res.status(400).json({ error: 'Valor de avaliação inválido.' });
 
   try {
-    const nova = await (prisma as any).avaliacao.create({
+    // tenta criar uma nova avaliação
+    const nova = await prisma.avaliacao.create({
       data: {
-        avaliacao,
+        avaliacao: avaliacaoEnum as any,
         comentario: comentario ?? null,
         usuarioId,
-        anuncioId: anuncioIdNum,
+        anuncioId: Number(anuncioId),
       },
     });
 
     res.status(201).json(nova);
+
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      // Violação de unique (usuário já avaliou o anúncio)
-      if (err.code === 'P2002') {
-        return res.status(409).json({ error: 'Você já avaliou este anúncio.' });
+    // Caso o usuário já tenha avaliado o mesmo anúncio (violação de unique)
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      try {
+        // Busca a avaliação existente
+        const existente = await prisma.avaliacao.findFirst({
+          where: { usuarioId, anuncioId: Number(anuncioId) },
+        });
+
+        if (!existente) {
+          return res.status(404).json({ error: 'Avaliação existente não encontrada.' });
+        }
+
+        // Atualiza a avaliação
+        const atualizado = await prisma.avaliacao.update({
+          where: { id: existente.id },
+          data: {
+            avaliacao: avaliacaoEnum as any,
+            comentario: comentario ?? existente.comentario,
+          },
+        });
+
+        return res.status(200).json(atualizado);
+
+      } catch (updateErr) {
+        console.error('Erro ao atualizar avaliação existente:', updateErr);
+        return res.status(500).json({ error: 'Erro ao atualizar avaliação existente.' });
       }
     }
+
     console.error('Erro ao criar avaliação:', err);
     res.status(500).json({ error: 'Não foi possível criar a avaliação.' });
   }
 };
+
+
 
 // Atualiza avaliação — somente autor pode atualizar
 export const updateAvaliacao = async (req: AuthRequest, res: Response) => {
@@ -99,13 +133,41 @@ export const deleteAvaliacao = async (req: AuthRequest, res: Response) => {
 export const listByAnuncio = async (req: Request, res: Response) => {
   const { anuncioId } = req.params;
   const anuncioIdNum = Number(anuncioId);
-  if (Number.isNaN(anuncioIdNum)) return res.status(400).json({ error: 'ID do anúncio inválido.' });
+
+  if (Number.isNaN(anuncioIdNum)) {
+    return res.status(400).json({ error: 'ID do anúncio inválido.' });
+  }
 
   try {
-    const avals = await (prisma as any).avaliacao.findMany({ where: { anuncioId: anuncioIdNum } });
-    res.status(200).json(avals);
+    const avals = await prisma.avaliacao.findMany({
+      where: { anuncioId: anuncioIdNum },
+      select: {
+        id: true,
+        avaliacao: true,
+        comentario: true,
+        usuarioId: true,
+        anuncioId: true,
+      },
+    });
+
+    // 🔹 Mapeia o enum para número
+    const mapAvaliacaoToNumber = {
+      EXCELENTE: 5,
+      MUITO_BOM: 4,
+      BOM: 3,
+      REGULAR: 2,
+      RUIM: 1,
+    };
+
+    const avaliacoesConvertidas = avals.map(a => ({
+      ...a,
+      avaliacao: mapAvaliacaoToNumber[a.avaliacao as keyof typeof mapAvaliacaoToNumber],
+    }));
+
+    res.status(200).json(avaliacoesConvertidas);
   } catch (err) {
     console.error('Erro ao buscar avaliações:', err);
     res.status(500).json({ error: 'Não foi possível buscar avaliações.' });
   }
 };
+

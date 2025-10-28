@@ -19,6 +19,9 @@ export const getAllAnuncios = async (req: Request, res: Response) => {
           select: { nome: true, email: true },
         },
       },
+      where: {
+        ativo: true
+      }
     });
     res.status(200).json(anuncios);
   } catch (error) {
@@ -95,6 +98,7 @@ export const createAnuncio = async (req: AuthRequest, res: Response) => {
         condicao,
         tipo,
         usuarioId, // Associa ao usuário logado
+        ativo: true, // Define o anúncio como ativo por padrão
       },
     });
     res.status(201).json(novoAnuncio);
@@ -175,7 +179,7 @@ export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
   const userId = req.userId;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Usuário não autenticado.' });
+    return res.status(401).json({ error: "Usuário não autenticado." });
   }
 
   try {
@@ -183,28 +187,36 @@ export const deleteAnuncio = async (req: AuthRequest, res: Response) => {
     const usuarioIdNum = Number(userId);
 
     if (isNaN(idNum) || isNaN(usuarioIdNum)) {
-      return res.status(400).json({ error: 'ID inválido.' });
+      return res.status(400).json({ error: "ID inválido." });
     }
 
-    // Verifica se o anúncio existe e se pertence ao usuário
+    // Verifica se o anúncio existe e pertence ao usuário
     const anuncio = await prisma.anuncio.findUnique({ where: { id: idNum } });
     if (!anuncio) {
-      return res.status(404).json({ error: 'Anúncio não encontrado' });
+      return res.status(404).json({ error: "Anúncio não encontrado." });
     }
     if (anuncio.usuarioId !== usuarioIdNum) {
-      return res.status(403).json({ error: 'Acesso negado. Você não é o dono deste anúncio.' });
+      return res.status(403).json({ error: "Acesso negado. Você não é o dono deste anúncio." });
     }
 
-    await prisma.anuncio.delete({ where: { id: idNum } });
+    // 🔹 Deleta manualmente todos os registros dependentes
+    await prisma.$transaction([
+      prisma.avaliacao.deleteMany({ where: { anuncioId: idNum } }),
+      prisma.comentario.deleteMany({ where: { anuncioId: idNum } }),
+      // Se houver outras tabelas relacionadas (favoritos, imagens, etc), adicione-as aqui:
+      // prisma.imagem.deleteMany({ where: { anuncioId: idNum } }),
+      prisma.anuncio.delete({ where: { id: idNum } })
+    ]);
 
-    res.status(200).json({ message: "Anúncio deletado com sucesso." });
+    res.status(200).json({ message: "Anúncio e registros relacionados deletados com sucesso." });
+
   } catch (error) {
-    // Trata o erro caso o registro a ser deletado não seja encontrado
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       return res.status(404).json({ error: "Anúncio não encontrado para deleção." });
     }
+
     console.error("Erro ao deletar anúncio:", error);
-    res.status(500).json({ error: "Não foi possível deletar o anúncio." });
+    res.status(500).json({ error: "Não foi possível deletar o anúncio e seus registros relacionados." });
   }
 };
 

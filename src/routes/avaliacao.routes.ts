@@ -9,9 +9,9 @@ import {
 
 const router = Router();
 
-router.post('/', authMiddleware, createAvaliacao);
+router.post('/createAvaliacao', authMiddleware, createAvaliacao);
 router.put('/:id', authMiddleware, updateAvaliacao);
 router.delete('/:id', authMiddleware, deleteAvaliacao);
-router.get('/anuncio/:anuncioId', listByAnuncio);
+router.get('/listByAnuncio/:anuncioId', listByAnuncio);
 
 export default router;
