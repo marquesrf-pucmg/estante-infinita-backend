@@ -11,7 +11,7 @@ interface AuthRequest extends Request {
 const verifyAnuncioOwnership = async (anuncioId: number, usuarioId: number) => {
   const anuncio = await prisma.anuncio.findUnique({
     where: { id: anuncioId },
-    select: { usuarioId: true },
+    select: { usuarioId: true, ativo: true },
   });
 
   if (!anuncio) {
@@ -230,5 +230,42 @@ export const getAnunciosByUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Erro ao buscar anúncios por usuário:", error);
     res.status(500).json({ error: "Não foi possível buscar os anúncios deste usuário" });
+  }
+};
+
+// Inativa (marca como não ativo) um anúncio — apenas o dono pode inativar
+export const inactivateAnuncio = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Usuário não autenticado." });
+  }
+
+  try {
+    const idNum = parseNumericId(id);
+    const usuarioIdNum = parseNumericId(userId);
+
+    // Verifica propriedade do anúncio e obtém estado atual
+    const anuncio = await verifyAnuncioOwnership(idNum, usuarioIdNum);
+
+    const novoEstado = !anuncio.ativo;
+
+    const anuncioAtualizado = await prisma.anuncio.update({
+      where: { id: idNum },
+      data: { ativo: novoEstado },
+    });
+
+    res.status(200).json({
+      message: novoEstado ? "Anúncio ativado com sucesso." : "Anúncio inativado com sucesso.",
+      anuncio: anuncioAtualizado,
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return res.status(404).json({ error: "Anúncio não encontrado para inativação." });
+    }
+
+    console.error("Erro ao inativar anúncio:", error);
+    res.status(500).json({ error: "Não foi possível inativar o anúncio." });
   }
 };

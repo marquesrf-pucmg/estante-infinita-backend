@@ -7,6 +7,7 @@ import {
   createAnuncio,
   updateAnuncio,
   deleteAnuncio,
+  inactivateAnuncio,
 } from "../controllers/anuncioController";
 
 const router: Router = Router();
@@ -23,6 +24,7 @@ router.get("/getAnunciosByUser/:userId", getAnunciosByUser);
 // O middleware de autenticação é aplicado a todas as rotas abaixo.
 router.post("/createAnuncio", authMiddleware, createAnuncio);
 router.put("/updateAnuncio/:id", authMiddleware, updateAnuncio);
+router.patch("/inactivateAnuncio/:id", authMiddleware, inactivateAnuncio);
 router.delete("/deleteAnuncio/:id", authMiddleware, deleteAnuncio);
 
 export default router;
