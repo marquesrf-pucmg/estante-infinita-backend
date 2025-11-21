@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3333;
 
 const corsOptions = {
-  origin: "http://localhost:4200", // Pode ser a string direta, já que é só uma
+  origin: ["http://localhost:4200", "http://localhost:8081"], // Pode ser a string direta, já que é só uma
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Garanta que OPTIONS está aqui
   allowedHeaders: "Content-Type, Authorization", // Adicione outros headers que seu front-end envia
   optionsSuccessStatus: 204 // Responde ao preflight com 204 No Content
